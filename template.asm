@@ -59,13 +59,50 @@ main:
 
 
 ; BEGIN: clear_leds
-clear_leds:
-
+clear_leds: 
+    stw zero, LEDS(zero)
+    stw zero, 4 + LEDS(zero)
+    stw zero, 8 + LEDS(zero)
+    ret
 ; END: clear_leds
 
 
 ; BEGIN: set_pixel
 set_pixel:
+    
+    ; x * 8 + y 
+    sll t0, a0, 3
+    add t0, t0, a1
+
+    ; sets bit = 1 in the desired place
+    addi t1, zero, 1 
+    sll t0, t1, t0
+
+    ; Implement the multiplexer
+
+    addi t1, zero, 4
+    blt a0, t1, enable_led1
+    addi t1, t1, 4
+    blt a0, t1, enable_led2 
+    addi t1, t1, 4
+    blt a0, t1, enable_led3 
+    ret
+
+    enable_led1:
+        ldw t3, LEDS(zero)
+        or t0, t0, t3
+        stw t0, LEDS(zero)
+        ret 
+    enable_led2:
+        ldw t3, LEDS + 4 (zero)
+        or t0, t0, t3
+        stw t0, LEDS + 4 (zero)
+        ret 
+    enable_led3:
+        ldw t3, LEDS + 8 (zero)
+        or t0, t0, t3
+        stw t0, LEDS + 8(zero)
+        ret 
 
 ; END: set_pixel
 
