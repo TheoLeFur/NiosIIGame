@@ -19,6 +19,12 @@
 .equ    RANDOM_NUM,     0x2010  ; Random number generator address
 .equ    BUTTONS,        0x2030  ; Buttons addresses
 
+; starting the game 
+
+.equ START_HEAD_X       0 ; x coordinate of the ehad at start of the game
+.equ START_HEAD_Y       0 ; y coordinate of the ehad at start of the game
+.equ START_DIR          4 ; the snak eoges right at the beginning of the game
+
 ; button state
 .equ    BUTTON_NONE,    0
 .equ    BUTTON_LEFT,    1
@@ -106,15 +112,89 @@ set_pixel:
 
 ; END: set_pixel
 
+digit_map:
+.word 0xFC ; 0
+.word 0x60 ; 1 
+.word 0xDA ; 2 
+.word 0xF2 ; 3 
+.word 0x66 ; 4 
+.word 0xB6 ; 5 
+.word 0xBE ; 6 
+.word 0xE0 ; 7 
+.word 0xFE ; 8 
+.word 0xF6 ; 9
 
 ; BEGIN: display_score
 display_score:
 
+
+    first_two_zero:
+        addi t1, zero, 0xFC
+        stw t1, SEVEN_SEGS(zero)
+        stw t1, SEVEN_SEGS + 4 (zero)
+        ret 
+
 ; END: display_score
+
+last_two_score 
+    slli t2, t2, 2
+    ldw t1, digit_map(t2)
+    stw t1, SEVEN_SEGS + 12 (zero)
 
 
 ; BEGIN: init_game
 init_game:
+
+; make some space on the stack
+addi, sp, sp, -4
+stw ra, sp(0)
+
+; Clear the GSA 
+addi t0, t0, 95
+slli t0, t0, 2 
+
+init_gsa:
+addi t0, t0, -4 
+stw, zero, GSA(t0)
+bne t0, zero, init_gsa
+
+; Init the snake's position
+addi t0, zero, START_HEAD_X
+stw t0, HEAD_X(zero)
+addi t0, zero, START_HEAD_X 
+stw t0, TAIL_X(zero)
+
+addi t0, zero, START_HEAD_Y
+stw t0, HEAD_Y(zero)
+addi t0, zero, START_HEAD_Y 
+stw t0, TAIL_Y(zero)
+
+
+; Initialize the moving direction 
+
+; Recover the position in the GSA
+addi t0, zero, START_HEAD_X
+slli t0, t0, 3
+addi t0, t0, START_HEAD_Y 
+
+; Shift by 2 to access the word
+slli t0, t0, 2
+addi t1, zero, START_DIR 
+; Write the init direction in the GSA 
+stw t1, GSA(t0)
+
+; Call the necessary procedures for initializing the game
+call display_score
+call clear_leds 
+call create_food 
+call draw_array 
+
+
+
+; Clear the stack
+ldw ra, 0(sp)
+addi sp, sp ,4
+ret
 
 ; END: init_game
 
@@ -257,8 +337,6 @@ hit_boundary_or_body:
 addi v0, zero, 2 
 stw zero, GSA(t2)
 ret
-
-
 ; END: hit_test
 
 
@@ -307,6 +385,7 @@ get_input:
         addi t4, zero, 1
     stw t0, GSA(t1)
     ret
+
     change_up:
         addi t4, zero, 2
     stw t0, GSA(t1)
@@ -323,9 +402,7 @@ get_input:
     ret
 
 ; END:get_input
-
-
-; BEGIN: draw_array
+ BEGIN: draw_array
 draw_array:
     addi t4, zero, 0 ; current y
     addi t5, zero, 0 ; current x
@@ -382,7 +459,7 @@ draw_array:
 ; END: draw_array
 
 
-; BEGIN: move_snake
+ BEGIN: move_snake
 move_snake:
     ldw t1, HEAD_X (zero) ; t1 -> loading head x
     ldw t2, HEAD_Y (zero) ; t2 -> loading head y
@@ -484,20 +561,14 @@ move_snake:
             ret
 ; END: move_snake
 
-
 ; BEGIN: save_checkpoint
 save_checkpoint:
-
 ; END: save_checkpoint
-
 
 ; BEGIN: restore_checkpoint
 restore_checkpoint:
-
 ; END: restore_checkpoint
-
 
 ; BEGIN: blink_score
 blink_score:
-
 ; END: blink_score
