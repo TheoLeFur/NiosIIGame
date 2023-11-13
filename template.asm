@@ -48,6 +48,8 @@
 	.equ RET_COLLISION, 2        ; return value for hit_test when a collision was detected
 	.equ ARG_HUNGRY, 0           ; a0 argument for move_snake when food wasn't eaten
 	.equ ARG_FED, 1              ; a0 argument for move_snake when food was eaten
+    .equ BLINKS, 10              ; number of times one should blink the scor eonce it is called
+
 	
 	; initialize stack pointer
 	addi sp, zero, LEDS
@@ -212,10 +214,10 @@ init_game:
 	addi t0, t0, 95
 	slli t0, t0, 2
 	
-init_gsa:
-	addi t0, t0, - 4
-	stw, zero, GSA(t0)
-	bne t0, zero, init_gsa
+    init_gsa:
+        addi t0, t0, - 4
+        stw, zero, GSA(t0)
+        bne t0, zero, init_gsa
 	
 	; Init the snake's position
 	addi t0, zero, START_HEAD_X
@@ -709,11 +711,68 @@ restore_checkpoint:
         stw t1, GSA(t4)
         addi t2, t2, 1 
         jmpi load_gsa
-        
+
     end_restore_checkpoint:
         ret
 ; END: restore_checkpoint
-	
+
+push_stack:
+    addi sp, sp, -32
+    stw s0, 28(sp)
+    stw s1, 24(sp)
+    stw s2, 20(sp)
+    stw s3, 16(sp)
+    stw s4, 12(sp)
+    stw s5, 8(sp)
+    stw s6, 4(sp)
+    stw s7, 0(sp)
+    ret
+
+pop_stack: 
+    ldw s0, 28(sp)
+    ldw s1, 24(sp)
+    ldw s2, 20(sp)
+    ldw s3, 16(sp)
+    ldw s4, 12(sp)
+    ldw s5, 8(sp)
+    ldw s6, 4(sp)
+    ldw s7, 0(sp)
+    
+    addi sp, sp, 32
+    ret
+
+
 ; BEGIN: blink_score
 blink_score:
+    addi sp, sp, -4
+    stw ra, sp(0) 
+
+    call push_stack
+    addi s0, zero, BLINKS
+
+    blink_loop:
+        ldw zero, SEVEN_SEGS(zero)
+        ldw zero, SEVEN_SEGS+4(zero)
+        ldw zero, SEVEN_SEGS+8(zero)
+        ldw zero, SEVEN_SEGS+12(zero)
+
+        call wait
+        call display_score
+        call wait
+
+        bne s0, zero, blink_loop
+
+    call pop_stack
+
+    ldw ra, sp(0)
+    addi sp, sp,4
+    ret
 ; END: blink_score
+
+; BEGIN : wait
+wait: 
+    
+    
+; END : wait
+
+
