@@ -124,22 +124,81 @@ digit_map:
 .word 0xFE ; 8 
 .word 0xF6 ; 9
 
+
+
 ; BEGIN: display_score
+
+divide: 
+    ; We shall give the Euclidian division of the score by 10, and its remainder. 
+
+    addi t0, zero, a0
+    addi t1, zero, a1
+    ; Quotient
+    addi t2, zero, 0 
+
+    division_loop:
+        sub t0, t0, a1
+        bge t0, a1, increment_quotient
+
+        jmpi end_division_loop
+
+
+    increment_quotient:
+        ; Increment the quotient by one
+        addi, t2, t2, 1
+        jmpi division_loop
+
+
+    end_division_loop:
+        ;Quotient by 10
+        add v0, t2, zero 
+        ; Remainder by 10
+        add v1, t0, zero
+        
+        ; We are word-aligned
+        slli v0, v0, 2
+        slli v1, v1, 2 
+
+        ; Load the words in the return registers
+        ldw v0, digit_map(v0)
+        ldw v1, digit_map(v1)
+
+        ret
+
 display_score:
 
+    ; Make some place on the stack
+    addi sp, sp, -4
+    stw ra, sp(0)
 
-    first_two_zero:
-        addi t1, zero, 0xFC
-        stw t1, SEVEN_SEGS(zero)
-        stw t1, SEVEN_SEGS + 4 (zero)
-        ret 
+    ; Load the value of the score. The score's value should be capped to 99
+    ldw a0, SCORE(zero)
+    andi a0, a0, 99
+    addi a1, zero, 10
+
+    ; Store the quotient in the register v0 and the remainder in the register v1
+    call divide 
+
+    ; Tens digits
+    stw v0, SEVEN_SEGS+8(zero)
+
+    ;Units digits
+    stw v1, SEVEN_SEGS+12(zero)
+
+    ;Hundreds digits : store the digit zero, since the max score is 99
+    stw digit_map(0), SEVEN_SEGS+4(zero)
+    ;Throusands digits : store the digit zero, since the max score is 99 
+    stw digit_map(0), SEVEN_SEGS (zero)
+
+    ; Restore initial stack state
+    ldw ra, sp(0)
+    addi sp, sp, 4
+
+    ret
+
+
 
 ; END: display_score
-
-last_two_score 
-    slli t2, t2, 2
-    ldw t1, digit_map(t2)
-    stw t1, SEVEN_SEGS + 12 (zero)
 
 
 ; BEGIN: init_game
