@@ -678,6 +678,40 @@ end_save_checkpoint:
 	
 ; BEGIN: restore_checkpoint
 restore_checkpoint:
+
+    ldw t0, CP_VALID(zero)
+    add v0, t0, zero 
+
+    beq v0, zero, end_restore_checkpoint 
+
+    ldw t1, CP_HEAD_X(zero)
+    stw t1, HEAD_X(zero)
+
+    ldw t1, CP_HEAD_Y(zero)
+    stw t1, HEAD_Y(zero)
+
+    ldw t1, CP_TAIL_X(zero)
+    stw t1, TAIL_X(zero)
+
+    ldw t1, CP_TAIL_Y(zero)
+    stw t1, TAIL_Y(zero)
+
+    ldw t1, CP_SCORE(zero)
+    stw t1, SCORE(zero)
+
+    add t2, zero, zero
+    addi t3, zero, 95 
+
+    load_gsa:
+        bge t2, t3, end_restore_checkpoint 
+        slli t4, t2, 2
+        ldw t1, CP_GSA(t4)
+        stw t1, GSA(t4)
+        addi t2, t2, 1 
+        jmpi load_gsa
+        
+    end_restore_checkpoint:
+        ret
 ; END: restore_checkpoint
 	
 ; BEGIN: blink_score
