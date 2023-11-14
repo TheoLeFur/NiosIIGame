@@ -115,18 +115,6 @@ enable_led3:
 	
 	; END: set_pixel
 	
-digit_map:
-	.word 0xFC                   ; 0
-	.word 0x60                   ; 1
-	.word 0xDA                   ; 2
-	.word 0xF2                   ; 3
-	.word 0x66                   ; 4
-	.word 0xB6                   ; 5
-	.word 0xBE                   ; 6
-	.word 0xE0                   ; 7
-	.word 0xFE                   ; 8
-	.word 0xF6                   ; 9
-	
 	
 	
 	; BEGIN: display_score
@@ -666,7 +654,7 @@ make_checkpoint:
 	; We need a method for storing the value of the GSA:
 	
 	add t4, zero, zero           ; iterator
-	addi, t5, zero, 96           ; number of cells
+	addi, t5, zero, NB_CELLS           ; number of cells
 store_gsa:
 	bge t4, t5, end_save_checkpoint ; saving is terminated
 	slli, t6, t4, 2              ; be word aligned
@@ -786,3 +774,14 @@ wait:
 ; END : wait
 
 
+digit_map:
+	.word 0xFC                   ; 0
+	.word 0x60                   ; 1
+	.word 0xDA                   ; 2
+	.word 0xF2                   ; 3
+	.word 0x66                   ; 4
+	.word 0xB6                   ; 5
+	.word 0xBE                   ; 6
+	.word 0xE0                   ; 7
+	.word 0xFE                   ; 8
+	.word 0xF6                   ; 9
