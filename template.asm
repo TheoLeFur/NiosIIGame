@@ -63,9 +63,74 @@
 	; return values
 	; This procedure should never return.
 main:
-	; TODO: Finish this procedure.
 	
-	ret
+
+	stw zero, CP_VALID(zero)	
+	
+	main_init:
+	call init_game 
+
+	main_loop:
+
+		call get_input
+		addi t0, zero, BUTTON_CHECKPOINT 
+		bne v0, t0, not_restore_checkpoint 
+
+		; Restore the sved checkpoint
+		call restore_checkpoint 
+		; Start again if the checkpoint is not valid 
+		beq v0, zero, main_loop
+		jmpi checkpoint_saved
+
+		not_restore_checkpoint:
+		call hit_test 
+
+		addi t0, zero, RET_ATE_FOOD
+		beq v0, t0, food_eaten
+
+		; No food has been eaten
+
+		addi t0, zero, RET_COLLISION
+		beq v0, t0, init_game
+
+		addi a0, ARG_HUNGRY
+		call move_snake 
+		jmpi display_game
+
+
+		food_eaten:
+		; If food eaten, increment the score
+		ldw t0, SCORE(zero)
+		addi t0, t0, 1
+		stw t0, SCORE(zero)
+
+		call display_score 
+
+		addi a0, zero, ARG_FED
+		call move_snake 
+
+		call create_food 
+		call save_checkpoint 
+		; Decide not to save the checkpoint
+		beq v0, zero, display_game 
+
+		checkpoint_saved:
+		; Succesfully loaded checkpoint
+		call blink_score 
+
+		display_game: 
+		; Take car of the game's display and call the main loop again
+		call clear_leds 
+		call draw_array 
+		jmpi main_loop 
+
+
+
+
+
+
+
+
 	
 	
 	; BEGIN: clear_leds
@@ -255,20 +320,20 @@ init_game:
 	; BEGIN: create_food
 create_food:
 	; Find a random position that fits inside the GSA
-	addi t1, zero, 95
-loop_create_food:
-	ldw t0, RANDOM_NUM(zero)
-	andi t0, t0, 255
-	bge t0, t1, loop_create_food
+	addi t0, zero, NB_CELLS
+
+	ldw t1, RANDOM_NUM(zero)
+	andi t1, t1, 255
+	bge t1, t0, create_food
 	
-	slli t0, t0, 2
-	ldw t3, GSA(t0)
-	bne t3, zero, loop_create_food
-	addi t2, zero, 5
-	stw t2, GSA(t0)
+	slli t1, t1, 2
+	ldw t2, GSA(t1)
+	bne t2, zero, create_food
+
+	addi t3, zero, 5
+	stw t3, GSA(t1)
 	ret
 	; END: create_food
-	
 	
 	; BEGIN: hit_test
 hit_test:
