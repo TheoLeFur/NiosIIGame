@@ -49,7 +49,8 @@
 	.equ ARG_HUNGRY, 0           ; a0 argument for move_snake when food wasn't eaten
 	.equ ARG_FED, 1              ; a0 argument for move_snake when food was eaten
     .equ BLINKS, 10              ; number of times one should blink the scor eonce it is called
-	.equ CYCLES, 1				 ; number of cycles
+	.equ CYCLES, 25000000		 ; number of cycles 50 MHz clock => 50 000 000 million instructions per second, hence we make a wait of 0.5 seconds.
+
 
 	
 	; initialize stack pointer
