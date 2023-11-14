@@ -49,6 +49,7 @@
 	.equ ARG_HUNGRY, 0           ; a0 argument for move_snake when food wasn't eaten
 	.equ ARG_FED, 1              ; a0 argument for move_snake when food was eaten
     .equ BLINKS, 10              ; number of times one should blink the scor eonce it is called
+	.equ CYCLES, 1				 ; number of cycles
 
 	
 	; initialize stack pointer
@@ -771,8 +772,17 @@ blink_score:
 
 ; BEGIN : wait
 wait: 
-    
-    
+
+	addi t0, zero, CYCLES
+	addi t1, zero, 0
+
+	loop:
+		addi t1, t1, 1
+		bge t1, t0, end_wait
+		jmpi loop
+	
+	end_wait:
+		ret
 ; END : wait
 
 
