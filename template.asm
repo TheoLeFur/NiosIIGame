@@ -1,4 +1,4 @@
-	; set game state memory location
+; set game state memory location
 	.equ HEAD_X, 0x1000          ; Snake head's position on x
 	.equ HEAD_Y, 0x1004          ; Snake head's position on y
 	.equ TAIL_X, 0x1008          ; Snake tail's position on x
@@ -21,9 +21,9 @@
 	
 	; starting the game
 	
-	.equ START_HEAD_X 0          ; x coordinate of the ehad at start of the game
-	.equ START_HEAD_Y 0          ; y coordinate of the ehad at start of the game
-	.equ START_DIR 4             ; the snak eoges right at the beginning of the game
+	.equ START_HEAD_X, 0          ; x coordinate of the ehad at start of the game
+	.equ START_HEAD_Y, 0          ; y coordinate of the ehad at start of the game
+	.equ START_DIR, 4             ; the snak eoges right at the beginning of the game
 	
 	; button state
 	.equ BUTTON_NONE, 0
@@ -80,7 +80,7 @@ clear_leds:
 set_pixel:
 	
 	; x * 8 + y
-	sll t0, a0, 3
+	slli t0, a0, 3
 	add t0, t0, a1
 	
 	; sets bit = 1 in the desired place
@@ -122,8 +122,8 @@ enable_led3:
 divide:
 	; We shall give the Euclidian division of the score by 10, and its remainder.
 	
-	addi t0, zero, a0
-	addi t1, zero, a1
+	add t0, zero, a0
+	add t1, zero, a1
 	; Quotient
 	addi t2, zero, 0
 	
@@ -136,7 +136,7 @@ division_loop:
 	
 increment_quotient:
 	; Increment the quotient by one
-	addi, t2, t2, 1
+	addi t2, t2, 1
 	jmpi division_loop
 	
 	
@@ -160,7 +160,7 @@ display_score:
 	
 	; Make some place on the stack
 	addi sp, sp, - 4
-	stw ra, sp(0)
+	stw ra, 0(sp)
 	
 	; Load the value of the score. The score's value should be capped to 99
 	ldw a0, SCORE(zero)
@@ -177,12 +177,14 @@ display_score:
 	stw v1, SEVEN_SEGS + 12(zero)
 	
 	;Hundreds digits : store the digit zero, since the max score is 99
-	stw digit_map(0), SEVEN_SEGS + 4(zero)
+	ldw t0, digit_map (zero)
+	stw t0, SEVEN_SEGS + 4(zero)
 	;Throusands digits : store the digit zero, since the max score is 99
-	stw digit_map(0), SEVEN_SEGS (zero)
-	
+	ldw t0, digit_map (zero)
+	stw t0, SEVEN_SEGS (zero)
+
 	; Restore initial stack state
-	ldw ra, sp(0)
+	ldw ra, 0(sp)
 	addi sp, sp, 4
 	
 	ret
@@ -196,8 +198,8 @@ display_score:
 init_game:
 	
 	; make some space on the stack
-	addi, sp, sp, - 4
-	stw ra, sp(0)
+	addi sp, sp, - 4
+	stw ra, 0(sp)
 	
 	; Clear the GSA
 	addi t0, t0, 95
@@ -205,7 +207,7 @@ init_game:
 	
     init_gsa:
         addi t0, t0, - 4
-        stw, zero, GSA(t0)
+        stw zero, GSA(t0)
         bne t0, zero, init_gsa
 	
 	; Init the snake's position
@@ -254,7 +256,7 @@ create_food:
 	; Find a random position that fits inside the GSA
 	addi t1, zero, 95
 loop_create_food:
-	lw t0, RANDOM_NUM(zero)
+	ldw t0, RANDOM_NUM(zero)
 	andi t0, t0, 255
 	bge t0, t1, loop_create_food
 	
@@ -344,9 +346,9 @@ collision_next:
 	; SNAKE HIT THE BOUNDARY
 	
 	; head is out of the boundary in the x coordinate on the left
-	blt, t0, zero, hit_boundary_or_body
+	blt t0, zero, hit_boundary_or_body
 	; head is out of the boundary in the y coordinate on the left
-	blt, t1, zero, hit_boundary_or_body
+	blt t1, zero, hit_boundary_or_body
 	; head is out of the boundary in the x coordinate on the right
 	addi t4, zero, 12
 	bge t0, t4, hit_boundary_or_body
@@ -452,7 +454,7 @@ change_right:
 	ret
 	
 	; END:get_input
-BEGIN: draw_array
+;BEGIN: draw_array
 draw_array:
 	addi t4, zero, 0             ; current y
 	addi t5, zero, 0             ; current x
@@ -509,7 +511,7 @@ non_zero_pixel:
 	; END: draw_array
 	
 	
-BEGIN: move_snake
+;BEGIN: move_snake
 move_snake:
 	ldw t1, HEAD_X (zero)        ; t1 - > loading head x
 	ldw t2, HEAD_Y (zero)        ; t2 - > loading head y
@@ -654,10 +656,10 @@ make_checkpoint:
 	; We need a method for storing the value of the GSA:
 	
 	add t4, zero, zero           ; iterator
-	addi, t5, zero, NB_CELLS           ; number of cells
+	addi t5, zero, NB_CELLS           ; number of cells
 store_gsa:
 	bge t4, t5, end_save_checkpoint ; saving is terminated
-	slli, t6, t4, 2              ; be word aligned
+	slli t6, t4, 2              ; be word aligned
 	ldw t3, GSA(t6)              ; load the current state of the GSA
 	stw t3, CP_GSA(t6)           ; store the current state of the GSA
 	addi t4, t4, 1
@@ -734,7 +736,7 @@ pop_stack:
 ; BEGIN: blink_score
 blink_score:
     addi sp, sp, -4
-    stw ra, sp(0) 
+    stw ra, 0(sp) 
 
     call push_stack
     addi s0, zero, BLINKS
@@ -753,7 +755,7 @@ blink_score:
 
     call pop_stack
 
-    ldw ra, sp(0)
+    ldw ra, 0(sp)
     addi sp, sp,4
     ret
 ; END: blink_score
@@ -764,10 +766,10 @@ wait:
 	addi t0, zero, CYCLES
 	addi t1, zero, 0
 
-	loop:
+	loop_wait:
 		addi t1, t1, 1
 		bge t1, t0, end_wait
-		jmpi loop
+		jmpi loop_wait
 	
 	end_wait:
 		ret
