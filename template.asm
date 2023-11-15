@@ -242,15 +242,16 @@ display_score:
 	stw v1, SEVEN_SEGS + 12(zero)
 	
 	;Hundreds digits : store the digit zero, since the max score is 99
-	ldw t0, digit_map (zero)
+	ldw t0, digit_map(zero)
 	stw t0, SEVEN_SEGS + 4(zero)
 	;Throusands digits : store the digit zero, since the max score is 99
-	ldw t0, digit_map (zero)
+	ldw t0, digit_map(zero)
 	stw t0, SEVEN_SEGS (zero)
 
 	; Restore initial stack state
 	ldw ra, 0(sp)
 	addi sp, sp, 4
+
 	jmpi end_display_score
 
 	cap100:
@@ -269,7 +270,7 @@ init_game:
 	stw ra, 0(sp)
 	
 	; Clear the GSA
-	addi t0, t0, 95
+	addi t0, t0, NB_CELLS
 	slli t0, t0, 2
 	
     init_gsa:
@@ -288,6 +289,8 @@ init_game:
 	addi t0, zero, START_HEAD_Y
 	stw t0, TAIL_Y(zero)
 	
+	stw zero, SCORE(zero)
+	stw zero, BUTTONS+4(zero)
 	
 	; Initialize the moving direction
 	
@@ -338,7 +341,6 @@ create_food:
 ; BEGIN: hit_test
 hit_test:
 
-	
 	addi v0, zero, 0
 	
 	; Load the values of the snake's position
