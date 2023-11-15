@@ -251,12 +251,14 @@ display_score:
 	; Restore initial stack state
 	ldw ra, 0(sp)
 	addi sp, sp, 4
+	jmpi end_display_score
 
 	cap100:
 		addi a0, zero, 99
 		jmpi display_map
 
-	ret
+	end_display_score:
+		ret
 ; END: display_score
 
 
@@ -817,7 +819,7 @@ blink_score:
     addi s0, zero, BLINKS
 
     blink_loop:
-	
+
 		addi s0, s0, -1
 
         ldw zero, SEVEN_SEGS(zero)
