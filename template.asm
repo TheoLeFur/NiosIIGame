@@ -176,7 +176,7 @@ set_pixel:
         or t0, t0, t3
         stw t0, LEDS + 8(zero)
         ret 
-		
+
 ; END: set_pixel
 
 
@@ -835,12 +835,14 @@ wait:
 	slli t1, t1, 16
 	or t0, t0, t1
 
+	add t1, zero, zero
+
 	loop_wait:
 		addi t1, t1, 1
 		bge t1, t0, end_wait
 		jmpi loop_wait
 	
-	end_wait:
+	end_wait:z
 		ret
 ; END : wait
 
