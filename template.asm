@@ -49,10 +49,9 @@
 	.equ ARG_HUNGRY, 0           ; a0 argument for move_snake when food wasn't eaten
 	.equ ARG_FED, 1              ; a0 argument for move_snake when food was eaten
     .equ BLINKS, 10              ; number of times one should blink the scor eonce it is called
-	.equ CYCLES, 25000000		 ; number of cycles 50 MHz clock => 50 000 000 million instructions per second, hence we make a wait of 0.5 seconds.
+	.equ CYCLES_LOWER,  0b111100001000000 ; Lowest 16 bits of number of cycles = 25 mln (0.5 sec)
+	.equ CYCLES_UPPER, 0b101111101 ; Highest 16 bits of number of cycles = 25 mln (0.5 sec)
 
-
-	
 	; initialize stack pointer
 	addi sp, zero, LEDS
 	
@@ -71,6 +70,8 @@ main:
 	call init_game 
 
 	main_loop:
+
+		call wait
 
 		call get_input
 		addi t0, zero, BUTTON_CHECKPOINT 
@@ -377,7 +378,7 @@ up:
 	add t2, t2, t1
 	slli t2, t2, 2
 	ldw t3, GSA(t2)
-	
+
 	jmpi collision_next
 	
 down:
@@ -821,9 +822,10 @@ blink_score:
 
 ; BEGIN : wait
 wait: 
-
-	addi t0, zero, CYCLES
-	addi t1, zero, 0
+	
+	addi t0, zero, CYCLES_LOWER
+	slli t1, CYCLES_UPPER, 16 
+	or t0, t0, t1
 
 	loop_wait:
 		addi t1, t1, 1
