@@ -126,6 +126,7 @@ main:
 		call draw_array 
 		jmpi main_loop 
 
+
 		main_loose:
 			call wait
 			jmpi main_init 
@@ -159,6 +160,23 @@ set_pixel:
 	addi t1, t1, 4
 	blt a0, t1, enable_led3
 	ret
+
+	enable_led1:
+        ldw t3, LEDS(zero)
+        or t0, t0, t3
+        stw t0, LEDS(zero)
+        ret 
+    enable_led2:
+        ldw t3, LEDS + 4 (zero)
+        or t0, t0, t3
+        stw t0, LEDS + 4 (zero)
+        ret 
+    enable_led3:
+        ldw t3, LEDS + 8 (zero)
+        or t0, t0, t3
+        stw t0, LEDS + 8(zero)
+        ret 
+		
 ; END: set_pixel
 
 
