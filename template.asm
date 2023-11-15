@@ -54,20 +54,20 @@
 
 	; initialize stack pointer
 	addi sp, zero, LEDS
-	
-	; main
-	; arguments
-	; none
-	;
-	; return values
-	; This procedure should never return.
+
+
+; main
+; arguments
+;     none
+;
+; return values
+;     This procedure should never return.
 main:
-	
 
 	stw zero, CP_VALID(zero)	
 	
 	main_init:
-	call init_game 
+		call init_game 
 
 	main_loop:
 
@@ -125,18 +125,18 @@ main:
 		call draw_array 
 		jmpi main_loop 
 
-	; BEGIN: clear_leds
+; BEGIN: clear_leds
 clear_leds:
 	stw zero, LEDS(zero)
 	stw zero, 4 + LEDS(zero)
 	stw zero, 8 + LEDS(zero)
 	ret
-	; END: clear_leds
-	
-	
-	; BEGIN: set_pixel
+; END: clear_leds
+
+
+; BEGIN: set_pixel
 set_pixel:
-	
+
 	; x * 8 + y
 	slli t0, a0, 3
 	add t0, t0, a1
@@ -154,29 +154,10 @@ set_pixel:
 	addi t1, t1, 4
 	blt a0, t1, enable_led3
 	ret
-	
-enable_led1:
-	ldw t3, LEDS(zero)
-	or t0, t0, t3
-	stw t0, LEDS(zero)
-	ret
-enable_led2:
-	ldw t3, LEDS + 4 (zero)
-	or t0, t0, t3
-	stw t0, LEDS + 4 (zero)
-	ret
-enable_led3:
-	ldw t3, LEDS + 8 (zero)
-	or t0, t0, t3
-	stw t0, LEDS + 8(zero)
-	ret
-	
-	; END: set_pixel
-	
-	
-	
-	; BEGIN: display_score
-	
+; END: set_pixel
+
+
+; BEGIN: display_score
 divide:
 	; We shall give the Euclidian division of the score by 10, and its remainder.
 	
@@ -215,7 +196,6 @@ end_division_loop:
 	ret
 	
 display_score:
-	
 	; Make some place on the stack
 	addi sp, sp, - 4
 	stw ra, 0(sp)
@@ -246,16 +226,12 @@ display_score:
 	addi sp, sp, 4
 	
 	ret
-	
-	
-	
-	; END: display_score
-	
-	
-	; BEGIN: init_game
+; END: display_score
+
+
+; BEGIN: init_game
 init_game:
-	
-	; make some space on the stack
+; make some space on the stack
 	addi sp, sp, - 4
 	stw ra, 0(sp)
 	
@@ -300,18 +276,16 @@ init_game:
 	call draw_array
 	
 	
-	
 	; Clear the stack
 	ldw ra, 0(sp)
 	addi sp, sp, 4
 	ret
-	
-	; END: init_game
-	
-	
-	; BEGIN: create_food
+; END: init_game
+
+
+; BEGIN: create_food
 create_food:
-	; Find a random position that fits inside the GSA
+; Find a random position that fits inside the GSA
 	addi t0, zero, NB_CELLS
 
 	ldw t1, RANDOM_NUM(zero)
@@ -325,10 +299,12 @@ create_food:
 	addi t3, zero, 5
 	stw t3, GSA(t1)
 	ret
-	; END: create_food
-	
-	; BEGIN: hit_test
+; END: create_food
+
+
+; BEGIN: hit_test
 hit_test:
+
 	
 	addi v0, zero, 0
 	
@@ -449,11 +425,12 @@ hit_boundary_or_body:
 	addi v0, zero, RET_COLLISION
 	stw zero, GSA(t2)
 	ret
-	; END: hit_test
-	
-	
-	; BEGIN:get_input
+; END: hit_test
+
+
+; BEGIN: get_input
 get_input:
+
 	ldw t0, BUTTONS + 4 (zero)   ; t0 - > edge_capture
 	stw zero, BUTTONS + 4 (zero) ; edge_capture is accualized to 0
 	
@@ -512,10 +489,12 @@ change_right:
 	addi t4, zero, 4
 	stw t4, GSA(t1)
 	ret
-	
-	; END:get_input
-;BEGIN: draw_array
+; END: get_input
+
+
+; BEGIN: draw_array
 draw_array:
+
 	addi t4, zero, 0             ; current y
 	addi t5, zero, 0             ; current x
 	jmpi loop
@@ -568,11 +547,12 @@ non_zero_pixel:
 	addi sp, sp, 12
 	
 	jmpi next_iteration
-	; END: draw_array
-	
-	
-;BEGIN: move_snake
+; END: draw_array
+
+
+; BEGIN: move_snake
 move_snake:
+
 	ldw t1, HEAD_X (zero)        ; t1 - > loading head x
 	ldw t2, HEAD_Y (zero)        ; t2 - > loading head y
 	
@@ -671,10 +651,12 @@ tail_move_right:
 	addi t1, t1, 1               ; t1 - > tail_x, move right
 	stw t1, TAIL_X (zero)        ; storing new tail x
 	ret
-	; END: move_snake
-	
-	; BEGIN: save_checkpoint
+; END: move_snake
+
+
+; BEGIN: save_checkpoint
 save_checkpoint:
+
 	; Init return value to zero
 	add v0, zero, zero
 	ldw t0, SCORE(zero)
@@ -728,7 +710,8 @@ store_gsa:
 end_save_checkpoint:
 	ret
 ; END: save_checkpoint
-	
+
+
 ; BEGIN: restore_checkpoint
 restore_checkpoint:
 
@@ -767,6 +750,9 @@ restore_checkpoint:
         ret
 ; END: restore_checkpoint
 
+
+; BEGIN: blink_score
+blink_score:
 push_stack:
     addi sp, sp, -32
     stw s0, 28(sp)
@@ -792,8 +778,6 @@ pop_stack:
     addi sp, sp, 32
     ret
 
-
-; BEGIN: blink_score
 blink_score:
     addi sp, sp, -4
     stw ra, 0(sp) 
