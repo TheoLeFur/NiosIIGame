@@ -77,7 +77,7 @@ main:
 		addi t0, zero, BUTTON_CHECKPOINT 
 		bne v0, t0, not_restore_checkpoint 
 
-		; Restore the sved checkpoint
+		; Restore the saved checkpoint
 		call restore_checkpoint 
 		; Start again if the checkpoint is not valid 
 		beq v0, zero, main_loop
@@ -817,6 +817,9 @@ blink_score:
     addi s0, zero, BLINKS
 
     blink_loop:
+	
+		addi s0, s0, -1
+
         ldw zero, SEVEN_SEGS(zero)
         ldw zero, SEVEN_SEGS+4(zero)
         ldw zero, SEVEN_SEGS+8(zero)
