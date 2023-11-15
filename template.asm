@@ -94,7 +94,7 @@ main:
 		addi t0, zero, RET_COLLISION
 		beq v0, t0, init_game
 
-		addi a0, ARG_HUNGRY
+		addi a0, zero, ARG_HUNGRY
 		call move_snake 
 		jmpi display_game
 
@@ -824,7 +824,8 @@ blink_score:
 wait: 
 	
 	addi t0, zero, CYCLES_LOWER
-	slli t1, CYCLES_UPPER, 16 
+	addi t1, zero, CYCLES_UPPER 
+	slli t1, t1, 16
 	or t0, t0, t1
 
 	loop_wait:
