@@ -190,9 +190,8 @@ divide:
 	addi t2, zero, 0
 	
 division_loop:
-	sub t0, t0, a1
 	bge t0, a1, increment_quotient
-	
+	sub t0, t0, a1
 	jmpi end_division_loop
 	
 	
@@ -266,42 +265,44 @@ display_score:
 ; BEGIN: init_game
 init_game:
 addi	sp, sp, -4
-	stw		ra, 0(sp)
+	stw	ra, 0(sp)
 
-	addi	t0, zero, START_HEAD_X
-	stw		t0, HEAD_X(zero)	; initialize x position of head
+	addi t0, zero, START_HEAD_X
+	stw	t0, HEAD_X(zero)	
 
-	addi	t0, zero, START_HEAD_Y
-	stw		t0, HEAD_Y(zero)	; initialize x position of head
+	addi t0, zero, START_HEAD_Y
+	stw	t0, HEAD_Y(zero)	
 
-	addi	t0, zero, START_HEAD_X
-	stw		t0, TAIL_X(zero)	; initialize x position of tail
+	addi t0, zero, START_HEAD_X
+	stw	t0, TAIL_X(zero)	
 
-	addi	t0, zero, START_HEAD_Y
-	stw		t0, TAIL_Y(zero)	; initialize x position of tail
+	addi t0, zero, START_HEAD_Y
+	stw	t0, TAIL_Y(zero)	
 
-	stw		zero, SCORE(zero)	; initialize score at 0
+	stw	zero, SCORE(zero)	
+	stw	zero, BUTTONS+4(zero)	
 
-	stw		zero, BUTTONS+4(zero)	; reset buttons pressed
+	addi t0, zero, NB_CELLS
+	; Become word aligned
+	slli t0, t0, 2
 
-	addi	t0, zero, NB_CELLS
-	slli	t0, t0, 2
-	clear_gsa:
+	init_gsa:
 		addi	t0, t0, -4
 		stw		zero, GSA(t0)
-		bne		t0, zero, clear_gsa ; clear GSA array from cell 95 down to 0
+		bne		t0, zero, init_gsa 
 
-	addi	t0, zero, START_DIR
-	addi	t1, zero, START_HEAD_X
-	slli	t1, t1, 3
-	addi	t1, t1, START_HEAD_Y
-	slli	t1, t1, 2
-	stw		t0, GSA(t1)	; initialize moving direction
+	addi t0, zero, START_HEAD_X
+	addi t1, zero, START_DIR
 
-	call 	clear_leds
-	call	display_score
- 	call	create_food
-	call	draw_array
+	slli t0, t0, 3
+	addi t1, t1, START_HEAD_Y
+	slli t1, t1, 2
+	stw	 t0, GSA(t1)	; initialize moving direction
+
+	call  clear_leds
+	call display_score
+ 	call create_food
+	call draw_array
 
 	ldw		ra, 0(sp)
 	addi 	sp, sp, 4
