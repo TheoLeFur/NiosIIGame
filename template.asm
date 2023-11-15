@@ -265,56 +265,47 @@ display_score:
 
 ; BEGIN: init_game
 init_game:
-; make some space on the stack
-	addi sp, sp, - 4
-	stw ra, 0(sp)
-	
-	; Clear the GSA
-	addi t0, t0, NB_CELLS
-	slli t0, t0, 2
-	
-    init_gsa:
-        addi t0, t0, - 4
-        stw zero, GSA(t0)
-        bne t0, zero, init_gsa
-	
-	; Init the snake's position
-	addi t0, zero, START_HEAD_X
-	stw t0, HEAD_X(zero)
-	addi t0, zero, START_HEAD_X
-	stw t0, TAIL_X(zero)
-	
-	addi t0, zero, START_HEAD_Y
-	stw t0, HEAD_Y(zero)
-	addi t0, zero, START_HEAD_Y
-	stw t0, TAIL_Y(zero)
-	
-	stw zero, SCORE(zero)
-	stw zero, BUTTONS+4(zero)
-	
-	; Initialize the moving direction
-	
-	; Recover the position in the GSA
-	addi t0, zero, START_HEAD_X
-	slli t0, t0, 3
-	addi t0, t0, START_HEAD_Y
-	
-	; Shift by 2 to access the word
-	slli t0, t0, 2
-	addi t1, zero, START_DIR
-	; Write the init direction in the GSA
-	stw t1, GSA(t0)
-	
-	; Call the necessary procedures for initializing the game
-	call display_score
-	call clear_leds
-	call create_food
-	call draw_array
-	
-	
-	; Clear the stack
-	ldw ra, 0(sp)
-	addi sp, sp, 4
+addi	sp, sp, -4
+	stw		ra, 0(sp)
+
+	addi	t0, zero, START_HEAD_X
+	stw		t0, HEAD_X(zero)	; initialize x position of head
+
+	addi	t0, zero, START_HEAD_Y
+	stw		t0, HEAD_Y(zero)	; initialize x position of head
+
+	addi	t0, zero, START_HEAD_X
+	stw		t0, TAIL_X(zero)	; initialize x position of tail
+
+	addi	t0, zero, START_HEAD_Y
+	stw		t0, TAIL_Y(zero)	; initialize x position of tail
+
+	stw		zero, SCORE(zero)	; initialize score at 0
+
+	stw		zero, BUTTONS+4(zero)	; reset buttons pressed
+
+	addi	t0, zero, NB_CELLS
+	slli	t0, t0, 2
+	clear_gsa:
+		addi	t0, t0, -4
+		stw		zero, GSA(t0)
+		bne		t0, zero, clear_gsa ; clear GSA array from cell 95 down to 0
+
+	addi	t0, zero, START_DIR
+	addi	t1, zero, START_HEAD_X
+	slli	t1, t1, 3
+	addi	t1, t1, START_HEAD_Y
+	slli	t1, t1, 2
+	stw		t0, GSA(t1)	; initialize moving direction
+
+	call 	clear_leds
+	call	display_score
+ 	call	create_food
+	call	draw_array
+
+	ldw		ra, 0(sp)
+	addi 	sp, sp, 4
+
 	ret
 ; END: init_game
 
