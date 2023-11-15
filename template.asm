@@ -482,17 +482,17 @@ get_input:
 	
 	; snake can only go up or down if changed
 case_left_rigt:
-	andi t4, t0, 4               ; upwards
+	andi t4, t0, 2               ; upwards
 	bne zero, t4, change_up
-	andi t4, t0, 8               ; down
+	andi t4, t0, 4               ; down
 	bne zero, t4, change_down
 	ret
 	
 	; snake can only go left or right if changed
 case_up_down:
-	andi t4, t0, 2               ; left
+	andi t4, t0, 1               ; left
 	bne zero, t4, change_left
-	andi t4, t0, 16               ; right
+	andi t4, t0, 8               ; right
 	bne zero, t4, change_right
 	ret
 	
