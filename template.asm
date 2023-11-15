@@ -183,23 +183,19 @@ set_pixel:
 ; BEGIN: display_score
 divide:
 	; We shall give the Euclidian division of the score by 10, and its remainder.
-	
+	; Score in a0
 	add t0, zero, a0
+	; Divisor = 10
 	add t1, zero, a1
+
 	; Quotient
 	addi t2, zero, 0
 	
 division_loop:
-	bge t0, a1, increment_quotient
-	sub t0, t0, a1
-	jmpi end_division_loop
-	
-	
-increment_quotient:
-	; Increment the quotient by one
+	blt t0, t1, end_division_loop
+	sub t0, t0, t1 
 	addi t2, t2, 1
 	jmpi division_loop
-	
 	
 end_division_loop:
 	;Quotient by 10
