@@ -348,15 +348,15 @@ hit_test:
 	beq t3, t4, left
 	
 	; Collision up
-	addi t4, zero, 1
+	addi t4, zero, 2
 	beq t3, t4, up
 	
 	; Collision down
-	addi t4, zero, 1
+	addi t4, zero, 3
 	beq t3, t4, down
 	
 	; Collision right
-	addi t4, zero, 1
+	addi t4, zero, 4
 	beq t3, t4, right
 	ret
 	
@@ -367,6 +367,7 @@ left:
 	add t2, t2, t1
 	slli t2, t2, 2
 	ldw t3, GSA(t2)
+
 	jmpi collision_next
 	
 up:
@@ -376,6 +377,7 @@ up:
 	add t2, t2, t1
 	slli t2, t2, 2
 	ldw t3, GSA(t2)
+	
 	jmpi collision_next
 	
 down:
@@ -436,14 +438,14 @@ collision_next:
 	
 hit_food:
 	; Returns 1 as when the snake hit food
-	addi v0, zero, 1
+	addi v0, zero, RET_ATE_FOOD
 	stw zero, GSA(t2)
 	ret
 	
 hit_boundary_or_body:
 	; Returns 2 as when the snake hit itself or the boundary.
 	; In each case, it signifies game over.
-	addi v0, zero, 2
+	addi v0, zero, RET_COLLISION
 	stw zero, GSA(t2)
 	ret
 	; END: hit_test
