@@ -465,6 +465,8 @@ get_input:
 	add t1, t1, t2
 	slli t1, t1, 2               ; the array is byte (not word) addressable
 	ldw t3, GSA (t1)             ; t3 - > stores in which way is head going
+
+	addi v0, t0, 0
 	
 	; Checking which way is head going
 	addi t4, zero, 1             ; t4 - > iterator
@@ -703,7 +705,6 @@ make_checkpoint:
 	stw v0, CP_VALID(zero)
 	
 	; We now store the game state in the memory region
-	
 	ldw t3, HEAD_X(zero)
 	stw t3, CP_HEAD_X(zero)
 	
@@ -716,12 +717,13 @@ make_checkpoint:
 	ldw t3, TAIL_Y(zero)
 	stw t3, CP_TAIL_Y(zero)
 	
-	stw t0, CP_SCORE(zero)
+	ldw t3, SCORE(zero)
+	stw t3, CP_SCORE(zero)
 	
 	; We need a method for storing the value of the GSA:
-	
 	add t4, zero, zero           ; iterator
 	addi t5, zero, NB_CELLS           ; number of cells
+
 store_gsa:
 	bge t4, t5, end_save_checkpoint ; saving is terminated
 	slli t6, t4, 2              ; be word aligned
@@ -737,6 +739,7 @@ end_save_checkpoint:
 
 ; BEGIN: restore_checkpoint
 restore_checkpoint:
+
 
     ldw t0, CP_VALID(zero)
     add v0, t0, zero 
