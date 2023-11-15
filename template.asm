@@ -291,11 +291,11 @@ addi	sp, sp, -4
 	addi t1, zero, START_DIR
 
 	slli t0, t0, 3
-	addi t1, t1, START_HEAD_Y
-	slli t1, t1, 2
-	stw	 t0, GSA(t1)	; initialize moving direction
+	addi t0, t0, START_HEAD_Y
+	slli t0, t0, 2
+	stw	 t1, GSA(t0)	; initialize moving direction
 
-	call  clear_leds
+	call clear_leds
 	call display_score
  	call create_food
 	call draw_array
