@@ -92,7 +92,7 @@ main:
 		; No food has been eaten
 
 		addi t0, zero, RET_COLLISION
-		beq v0, t0, init_game
+		beq v0, t0, main_loose
 
 		addi a0, zero, ARG_HUNGRY
 		call move_snake 
@@ -115,6 +115,7 @@ main:
 		; Decide not to save the checkpoint
 		beq v0, zero, display_game 
 
+
 		checkpoint_saved:
 		; Succesfully loaded checkpoint
 		call blink_score 
@@ -124,6 +125,10 @@ main:
 		call clear_leds 
 		call draw_array 
 		jmpi main_loop 
+
+		main_loose:
+			call wait
+			jmpi main_init 
 
 ; BEGIN: clear_leds
 clear_leds:
@@ -766,14 +771,14 @@ push_stack:
     ret
 
 pop_stack: 
-    ldw s0, 28(sp)
-    ldw s1, 24(sp)
-    ldw s2, 20(sp)
-    ldw s3, 16(sp)
-    ldw s4, 12(sp)
-    ldw s5, 8(sp)
-    ldw s6, 4(sp)
-    ldw s7, 0(sp)
+    ldw s7, 28(sp)
+	ldw s6, 24(sp)
+	ldw s5, 20(sp)
+	ldw s4, 16(sp)
+	ldw s3, 12(sp)
+	ldw s2, 8(sp)
+	ldw s1, 4(sp)
+	ldw s0, 0(sp)
     
     addi sp, sp, 32
     ret
