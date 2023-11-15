@@ -49,8 +49,8 @@
 	.equ ARG_HUNGRY, 0           ; a0 argument for move_snake when food wasn't eaten
 	.equ ARG_FED, 1              ; a0 argument for move_snake when food was eaten
     .equ BLINKS, 10              ; number of times one should blink the scor eonce it is called
-	.equ CYCLES_LOWER,  0b111100001000000 ; Lowest 16 bits of number of cycles = 25 mln (0.5 sec)
-	.equ CYCLES_UPPER, 0b101111101 ; Highest 16 bits of number of cycles = 25 mln (0.5 sec)
+	.equ CYCLES_LOWER,  0b111100000000000 ; Lowest 16 bits of number of cycles = 25 mln (0.5 sec)
+	.equ CYCLES_UPPER, 0b111101 ; Highest 16 bits of number of cycles = 25 mln (0.5 sec)
 
 	; initialize stack pointer
 	addi sp, zero, LEDS
@@ -225,7 +225,11 @@ display_score:
 	
 	; Load the value of the score. The score's value should be capped to 99
 	ldw a0, SCORE(zero)
-	andi a0, a0, 99
+	addi t1, zero, 100
+
+	bge a0, t1, cap100
+
+	display_map:
 	addi a1, zero, 10
 	
 	; Store the quotient in the register v0 and the remainder in the register v1
@@ -247,7 +251,11 @@ display_score:
 	; Restore initial stack state
 	ldw ra, 0(sp)
 	addi sp, sp, 4
-	
+
+	cap100:
+		addi a0, zero, 99
+		jmpi display_map
+
 	ret
 ; END: display_score
 
@@ -842,7 +850,7 @@ wait:
 		bge t1, t0, end_wait
 		jmpi loop_wait
 	
-	end_wait:z
+	end_wait:
 		ret
 ; END : wait
 
