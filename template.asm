@@ -124,15 +124,6 @@ main:
 		call draw_array 
 		jmpi main_loop 
 
-
-
-
-
-
-
-
-	
-	
 	; BEGIN: clear_leds
 clear_leds:
 	stw zero, LEDS(zero)
@@ -485,38 +476,38 @@ get_input:
 	
 	; snake can only go up or down if changed
 case_left_rigt:
-	andi t4, t0, 2               ; upwards
+	andi t4, t0, 4               ; upwards
 	bne zero, t4, change_up
-	andi t4, t0, 4               ; down
+	andi t4, t0, 8               ; down
 	bne zero, t4, change_down
 	ret
 	
 	; snake can only go left or right if changed
 case_up_down:
-	andi t4, t0, 1               ; left
+	andi t4, t0, 2               ; left
 	bne zero, t4, change_left
-	andi t4, t0, 8               ; right
+	andi t4, t0, 16               ; right
 	bne zero, t4, change_right
 	ret
 	
 change_left:
 	addi t4, zero, 1
-	stw t0, GSA(t1)
+	stw t4, GSA(t1)
 	ret
 	
 change_up:
 	addi t4, zero, 2
-	stw t0, GSA(t1)
+	stw t4, GSA(t1)
 	ret
 	
 change_down:
 	addi t4, zero, 3
-	stw t0, GSA(t1)
+	stw t4, GSA(t1)
 	ret
 	
 change_right:
 	addi t4, zero, 4
-	stw t0, GSA(t1)
+	stw t4, GSA(t1)
 	ret
 	
 	; END:get_input
