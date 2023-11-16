@@ -260,22 +260,25 @@ display_score:
 
 ; BEGIN: init_game
 init_game:
-addi	sp, sp, -4
-	stw	ra, 0(sp)
 
+	; Make space on the stack
+	addi	sp, sp, -4
+	stw	ra, 0(sp)
+	; Set the default head position
 	addi t0, zero, START_HEAD_X
 	stw	t0, HEAD_X(zero)	
-
 	addi t0, zero, START_HEAD_Y
 	stw	t0, HEAD_Y(zero)	
-
+	
+	; Set the default tail position = head
 	addi t0, zero, START_HEAD_X
 	stw	t0, TAIL_X(zero)	
-
 	addi t0, zero, START_HEAD_Y
 	stw	t0, TAIL_Y(zero)	
 
+	; Set score to 0
 	stw	zero, SCORE(zero)	
+	; Set score to 0 
 	stw	zero, BUTTONS+4(zero)	
 
 	addi t0, zero, NB_CELLS
@@ -287,19 +290,21 @@ addi	sp, sp, -4
 		stw		zero, GSA(t0)
 		bne		t0, zero, init_gsa 
 
+	; Init the moving direction 
 	addi t0, zero, START_HEAD_X
 	addi t1, zero, START_DIR
-
 	slli t0, t0, 3
 	addi t0, t0, START_HEAD_Y
 	slli t0, t0, 2
-	stw	 t1, GSA(t0)	; initialize moving direction
+	stw	 t1, GSA(t0)	
 
+	; Clear the leds, display the score, create food at random place
 	call clear_leds
 	call display_score
  	call create_food
 	call draw_array
 
+	; Restore stack pointer
 	ldw		ra, 0(sp)
 	addi 	sp, sp, 4
 
@@ -466,7 +471,26 @@ get_input:
 	slli t1, t1, 2               ; the array is byte (not word) addressable
 	ldw t3, GSA (t1)             ; t3 - > stores in which way is head going
 
-	addi v0, t0, 0
+	andi t4, t0, 1               ; t4 - > iterator
+    beq zero, t4, next_1 
+    addi v0, v0, 1 ; case left
+	next_1:
+	andi t4, t0, 2             
+	beq zero, t4, next_2 
+	addi v0, v0, 2 ; case up
+	next_2:
+	andi t4, t0, 4            
+	beq zero, t4, next_3 
+	addi v0, v0, 3 ; case down
+	next_3:
+	andi t4, t0, 8       
+	beq zero, t4, next_4 
+	addi v0, v0, 4 ; case right
+	next_4:
+	andi t4, t0, 16              
+	beq zero, t4, next_5 
+	addi v0, v0, 5 ; case left
+	next_5:
 	
 	; Checking which way is head going
 	addi t4, zero, 1             ; t4 - > iterator
