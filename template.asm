@@ -48,7 +48,7 @@
 	.equ RET_COLLISION, 2        ; return value for hit_test when a collision was detected
 	.equ ARG_HUNGRY, 0           ; a0 argument for move_snake when food wasn't eaten
 	.equ ARG_FED, 1              ; a0 argument for move_snake when food was eaten
-    .equ BLINKS, 10              ; number of times one should blink the scor eonce it is called
+    .equ BLINKS, 3             ; number of times one should blink the scor eonce it is called
 	.equ CYCLES_LOWER,  0b111100000000000 ; Lowest 16 bits of number of cycles = 25 mln (0.5 sec)
 	.equ CYCLES_UPPER, 0b111101 ; Highest 16 bits of number of cycles = 25 mln (0.5 sec)
 
@@ -804,28 +804,13 @@ restore_checkpoint:
 ; BEGIN: blink_score
 blink_score:
 push_stack:
-    addi sp, sp, -32
-    stw s0, 28(sp)
-    stw s1, 24(sp)
-    stw s2, 20(sp)
-    stw s3, 16(sp)
-    stw s4, 12(sp)
-    stw s5, 8(sp)
-    stw s6, 4(sp)
-    stw s7, 0(sp)
+    addi sp, sp, -4
+    stw s0, 0(sp)
     ret
 
 pop_stack: 
-    ldw s7, 28(sp)
-	ldw s6, 24(sp)
-	ldw s5, 20(sp)
-	ldw s4, 16(sp)
-	ldw s3, 12(sp)
-	ldw s2, 8(sp)
-	ldw s1, 4(sp)
 	ldw s0, 0(sp)
-    
-    addi sp, sp, 32
+    addi sp, sp, 4
     ret
 
 blink_score:
